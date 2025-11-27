@@ -2,7 +2,7 @@
  * Notes API methods.
  */
 import apiClient from './client';
-import { Note, CreateNoteData, UpdateNoteData, SummaryResponse } from '@/types';
+import { Note, CreateNoteData, UpdateNoteData, SummaryResponse, Tag, ExportFormat } from '@/types';
 
 interface NotesListResponse {
     count: number;
@@ -15,8 +15,10 @@ export const notesApi = {
     /**
      * Get all notes for the authenticated user
      */
-    async getNotes(search?: string): Promise<NotesListResponse> {
-        const params = search ? { search } : {};
+    async getNotes(search?: string, tagId?: number): Promise<NotesListResponse> {
+        const params: any = {};
+        if (search) params.search = search;
+        if (tagId) params.tag = tagId;
         const response = await apiClient.get('/notes/', { params });
         return response.data;
     },
@@ -59,4 +61,43 @@ export const notesApi = {
         const response = await apiClient.post(`/notes/${id}/summarize/`);
         return response.data;
     },
+
+    /**
+     * Export notes in specified format
+     */
+    async exportNotes(format: ExportFormat = 'json', search?: string, tagId?: number): Promise<Blob> {
+        const params: any = { format };
+        if (search) params.search = search;
+        if (tagId) params.tag = tagId;
+        
+        const response = await apiClient.get('/notes/export/', { 
+            params,
+            responseType: 'blob'
+        });
+        return response.data;
+    },
+
+    /**
+     * Get all tags for the authenticated user
+     */
+    async getTags(): Promise<Tag[]> {
+        const response = await apiClient.get('/tags/');
+        return response.data;
+    },
+
+    /**
+     * Create a new tag
+     */
+    async createTag(name: string): Promise<Tag> {
+        const response = await apiClient.post('/tags/', { name });
+        return response.data;
+    },
+
+    /**
+     * Delete a tag
+     */
+    async deleteTag(id: number): Promise<void> {
+        await apiClient.delete(`/tags/${id}/`);
+    },
 };
+

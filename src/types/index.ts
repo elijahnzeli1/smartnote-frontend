@@ -9,12 +9,19 @@ export interface User {
     created_at: string;
 }
 
+export interface Tag {
+    id: number;
+    name: string;
+    created_at: string;
+}
+
 export interface Note {
     id: number;
     user: string;
     title: string;
     content: string;
     summary: string | null;
+    tags: Tag[];
     created_at: string;
     updated_at: string;
 }
@@ -41,11 +48,13 @@ export interface CreateNoteData {
     title: string;
     content: string;
     auto_summarize?: boolean;
+    tag_ids?: number[];
 }
 
 export interface UpdateNoteData {
     title?: string;
     content?: string;
+    tag_ids?: number[];
 }
 
 export interface SummaryResponse {
@@ -58,3 +67,6 @@ export interface ApiError {
     message: string;
     details?: any;
 }
+
+export type ExportFormat = 'json' | 'csv' | 'markdown';
+
