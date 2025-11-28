@@ -10,6 +10,7 @@ import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { useAuth } from '@/lib/hooks';
 import Link from 'next/link';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 interface RegisterFormData {
     username: string;
@@ -23,6 +24,8 @@ export function RegisterForm() {
     const { register: registerUser } = useAuth();
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterFormData>();
 
@@ -79,7 +82,7 @@ export function RegisterForm() {
 
             <Input
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Create a password"
                 fullWidth
                 error={errors.password?.message}
@@ -87,11 +90,20 @@ export function RegisterForm() {
                     required: 'Password is required',
                     minLength: { value: 8, message: 'Password must be at least 8 characters' }
                 })}
+                suffix={
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    >
+                        {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                    </button>
+                }
             />
 
             <Input
                 label="Confirm Password"
-                type="password"
+                type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="Confirm your password"
                 fullWidth
                 error={errors.password_confirm?.message}
@@ -99,6 +111,15 @@ export function RegisterForm() {
                     required: 'Please confirm your password',
                     validate: value => value === password || 'Passwords do not match'
                 })}
+                suffix={
+                    <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    >
+                        {showConfirmPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                    </button>
+                }
             />
 
             {error && (
