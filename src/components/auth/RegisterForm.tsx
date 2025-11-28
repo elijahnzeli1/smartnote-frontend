@@ -36,10 +36,11 @@ export function RegisterForm() {
             await registerUser(data);
             // After successful registration, redirect to login
             router.push('/login?registered=true');
-        } catch (err: any) {
-            const errorMsg = err.response?.data?.username?.[0] ||
-                err.response?.data?.email?.[0] ||
-                err.response?.data?.message ||
+        } catch (err) {
+            const error = err as { response?: { data?: { username?: string[]; email?: string[]; message?: string } } };
+            const errorMsg = error.response?.data?.username?.[0] ||
+                error.response?.data?.email?.[0] ||
+                error.response?.data?.message ||
                 'Registration failed';
             setError(errorMsg);
         } finally {

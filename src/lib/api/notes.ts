@@ -16,7 +16,7 @@ export const notesApi = {
      * Get all notes for the authenticated user
      */
     async getNotes(search?: string, tagId?: number): Promise<NotesListResponse> {
-        const params: any = {};
+        const params: Record<string, string | number> = {};
         if (search) params.search = search;
         if (tagId) params.tag = tagId;
         const response = await apiClient.get('/notes/', { params });
@@ -66,7 +66,7 @@ export const notesApi = {
      * Export notes in specified format
      */
     async exportNotes(format: ExportFormat = 'json', search?: string, tagId?: number): Promise<Blob> {
-        const params: any = { format };
+        const params: Record<string, string | number> = { format };
         if (search) params.search = search;
         if (tagId) params.tag = tagId;
         

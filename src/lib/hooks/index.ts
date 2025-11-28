@@ -24,7 +24,7 @@ export function useAuth() {
                 try {
                     const profile = await authApi.getProfile();
                     setUser(profile);
-                } catch (error) {
+                } catch {
                     // Token expired or invalid
                     authApi.logout();
                 }
@@ -75,9 +75,18 @@ export function useNotes() {
         setError(null);
         try {
             const response = await notesApi.getNotes(search);
-            setNotes(response.results);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to fetch notes');
+            // Handle both paginated and non-paginated responses
+            if (Array.isArray(response)) {
+                setNotes(response);
+            } else if (response && Array.isArray(response.results)) {
+                setNotes(response.results);
+            } else {
+                setNotes([]);
+            }
+        } catch (err) {
+            const error = err as { response?: { data?: { message?: string } } };
+            setError(error.response?.data?.message || 'Failed to fetch notes');
+            setNotes([]); // Ensure notes is empty on error
         } finally {
             setLoading(false);
         }
@@ -89,8 +98,9 @@ export function useNotes() {
             const newNote = await notesApi.createNote(data);
             setNotes((prev) => [newNote, ...prev]);
             return newNote;
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to create note');
+        } catch (err) {
+            const error = err as { response?: { data?: { message?: string } } };
+            setError(error.response?.data?.message || 'Failed to create note');
             throw err;
         }
     };
@@ -103,8 +113,9 @@ export function useNotes() {
                 prev.map((note) => (note.id === id ? updatedNote : note))
             );
             return updatedNote;
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to update note');
+        } catch (err) {
+            const error = err as { response?: { data?: { message?: string } } };
+            setError(error.response?.data?.message || 'Failed to update note');
             throw err;
         }
     };
@@ -114,8 +125,9 @@ export function useNotes() {
         try {
             await notesApi.deleteNote(id);
             setNotes((prev) => prev.filter((note) => note.id !== id));
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to delete note');
+        } catch (err) {
+            const error = err as { response?: { data?: { message?: string } } };
+            setError(error.response?.data?.message || 'Failed to delete note');
             throw err;
         }
     };
@@ -131,8 +143,9 @@ export function useNotes() {
                 )
             );
             return response;
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to generate summary');
+        } catch (err) {
+            const error = err as { response?: { data?: { message?: string } } };
+            setError(error.response?.data?.message || 'Failed to generate summary');
             throw err;
         }
     };

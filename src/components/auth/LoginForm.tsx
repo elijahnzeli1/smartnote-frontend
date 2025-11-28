@@ -10,6 +10,7 @@ import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { useAuth } from '@/lib/hooks';
 import Link from 'next/link';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 interface LoginFormData {
     username: string;
@@ -21,6 +22,7 @@ export function LoginForm() {
     const { login } = useAuth();
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
 
@@ -31,8 +33,9 @@ export function LoginForm() {
         try {
             await login(data);
             router.push('/notes');
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Invalid credentials');
+        } catch (err) {
+            const error = err as { response?: { data?: { detail?: string } } };
+            setError(error.response?.data?.detail || 'Invalid credentials');
         } finally {
             setLoading(false);
         }
@@ -51,11 +54,20 @@ export function LoginForm() {
 
             <Input
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
                 fullWidth
                 error={errors.password?.message}
                 {...register('password', { required: 'Password is required' })}
+                suffix={
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none"
+                    >
+                        {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+                    </button>
+                }
             />
 
             {error && (
@@ -69,7 +81,7 @@ export function LoginForm() {
             </Button>
 
             <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/register" className="text-blue-600 hover:text-blue-700 font-medium">
                     Sign up
                 </Link>
