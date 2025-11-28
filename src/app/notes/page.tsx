@@ -9,6 +9,7 @@ import { useAuth, useNotes } from '@/lib/hooks';
 import { NotesList } from '@/components/notes/NotesList';
 import { NoteEditor } from '@/components/notes/NoteEditor';
 import { Button } from '@/components/ui/Button';
+import { Sidebar } from '@/components/layout/Sidebar';
 import { Note, CreateNoteData } from '@/types';
 
 export default function NotesPage() {
@@ -18,6 +19,7 @@ export default function NotesPage() {
 
     const [editorOpen, setEditorOpen] = useState(false);
     const [editingNote, setEditingNote] = useState<Note | undefined>();
+    const [selectedTagFilter, setSelectedTagFilter] = useState<number | undefined>();
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -76,68 +78,64 @@ export default function NotesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background dark:bg-gray-900">
-            {/* Header */}
-            <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                            Smart Notes
-                        </h1>
-                        <div className="flex items-center gap-4">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                                Welcome, {user.username}
-                            </span>
-                            <Button variant="ghost" onClick={logout}>
-                                Sign Out
-                            </Button>
+        <div className="min-h-screen bg-background dark:bg-gray-900 flex">
+            <Sidebar onLogout={logout} username={user.username} />
+
+            <div className="flex-1 lg:ml-64">
+                {/* Header */}
+                <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+                    <div className="container mx-auto px-4 py-4">
+                        <div className="flex items-center justify-between">
+                            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                Smart Notes
+                            </h1>
                         </div>
                     </div>
-                </div>
-            </header>
+                </header>
 
-            {/* Main Content */}
-            <main className="container mx-auto px-4 py-8">
-                <div className="mb-8 flex items-center justify-between">
-                    <div>
-                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                            My Notes
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">
-                            {notes?.length || 0} {notes?.length === 1 ? 'note' : 'notes'}
-                        </p>
+                {/* Main Content */}
+                <main className="container mx-auto px-4 py-8">
+                    <div className="mb-8 flex items-center justify-between">
+                        <div>
+                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                                My Notes
+                            </h2>
+                            <p className="text-gray-600 dark:text-gray-400 mt-1">
+                                {notes?.length || 0} {notes?.length === 1 ? 'note' : 'notes'}
+                            </p>
+                        </div>
+                        <Button onClick={handleCreateNote}>
+                            <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            New Note
+                        </Button>
                     </div>
-                    <Button onClick={handleCreateNote}>
-                        <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        New Note
-                    </Button>
-                </div>
 
-                {error && (
-                    <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 px-4 py-3 rounded-lg">
-                        {error}
-                    </div>
-                )}
+                    {error && (
+                        <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 px-4 py-3 rounded-lg">
+                            {error}
+                        </div>
+                    )}
 
-                <NotesList
-                    notes={notes}
-                    loading={loading}
-                    onEdit={handleEditNote}
-                    onDelete={handleDeleteNote}
-                    onSummarize={handleSummarize}
-                    onSearch={handleSearch}
+                    <NotesList
+                        notes={notes}
+                        loading={loading}
+                        onEdit={handleEditNote}
+                        onDelete={handleDeleteNote}
+                        onSummarize={handleSummarize}
+                        onSearch={handleSearch}
+                    />
+                </main>
+
+                {/* Note Editor Modal */}
+                <NoteEditor
+                    isOpen={editorOpen}
+                    onClose={() => setEditorOpen(false)}
+                    onSave={handleSaveNote}
+                    note={editingNote}
                 />
-            </main>
-
-            {/* Note Editor Modal */}
-            <NoteEditor
-                isOpen={editorOpen}
-                onClose={() => setEditorOpen(false)}
-                onSave={handleSaveNote}
-                note={editingNote}
-            />
+            </div>
         </div>
     );
 }

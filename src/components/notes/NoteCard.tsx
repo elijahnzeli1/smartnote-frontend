@@ -66,6 +66,20 @@ export function NoteCard({ note, onEdit, onDelete, onSummarize }: NoteCardProps)
                     {note.content}
                 </p>
 
+                {/* Tags */}
+                {note.tags && note.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {note.tags.map(tag => (
+                            <span
+                                key={tag.id}
+                                className="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs"
+                            >
+                                {tag.name}
+                            </span>
+                        ))}
+                    </div>
+                )}
+
                 {/* Summary Section */}
                 {note.summary ? (
                     <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">

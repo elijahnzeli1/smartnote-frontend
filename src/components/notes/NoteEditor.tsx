@@ -9,6 +9,7 @@ import { Modal } from '../ui/Modal';
 import { Input } from '../ui/Input';
 import { Textarea } from '../ui/Textarea';
 import { Button } from '../ui/Button';
+import { TagSelector } from './TagSelector';
 import { Note, CreateNoteData } from '@/types';
 
 interface NoteEditorProps {
@@ -20,6 +21,7 @@ interface NoteEditorProps {
 
 export function NoteEditor({ isOpen, onClose, onSave, note }: NoteEditorProps) {
     const [loading, setLoading] = useState(false);
+    const [selectedTags, setSelectedTags] = useState<number[]>([]);
     const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateNoteData>();
 
     useEffect(() => {
@@ -29,19 +31,21 @@ export function NoteEditor({ isOpen, onClose, onSave, note }: NoteEditorProps) {
                 content: note.content,
                 auto_summarize: false,
             });
+            setSelectedTags(note.tags.map(t => t.id));
         } else {
             reset({
                 title: '',
                 content: '',
                 auto_summarize: true,
             });
+            setSelectedTags([]);
         }
     }, [note, reset]);
 
     const onSubmit = async (data: CreateNoteData) => {
         setLoading(true);
         try {
-            await onSave(data);
+            await onSave({ ...data, tag_ids: selectedTags });
             onClose();
             reset();
         } finally {
@@ -72,6 +76,12 @@ export function NoteEditor({ isOpen, onClose, onSave, note }: NoteEditorProps) {
                     rows={10}
                     error={errors.content?.message}
                     {...register('content', { required: 'Content is required' })}
+                />
+
+                <TagSelector
+                    selectedTags={selectedTags}
+                    onChange={setSelectedTags}
+                    label="Tags"
                 />
 
                 {!note && (
