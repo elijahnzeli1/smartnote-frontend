@@ -32,14 +32,14 @@ export function NoteCard({ note, onEdit, onDelete, onSummarize }: NoteCardProps)
     };
 
     return (
-        <Card gradient className="hover:scale-[1.02] cursor-pointer group">
-            <div className="space-y-4">
+        <Card gradient className="hover:scale-[1.02] transition-transform h-full flex flex-col">
+            <div className="space-y-4 flex-1 flex flex-col">
                 {/* Header */}
-                <div className="flex items-start justify-between">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 flex-1">
                         {note.title}
                     </h3>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-shrink-0">
                         <button
                             onClick={() => onEdit(note)}
                             className="text-gray-400 hover:text-blue-600 transition-colors"
@@ -62,7 +62,7 @@ export function NoteCard({ note, onEdit, onDelete, onSummarize }: NoteCardProps)
                 </div>
 
                 {/* Content */}
-                <p className="text-gray-700 dark:text-gray-300 line-clamp-3">
+                <p className="text-gray-700 dark:text-gray-300 line-clamp-4 text-sm flex-1">
                     {note.content}
                 </p>
 

@@ -27,9 +27,10 @@ export function TagSelector({ selectedTags, onChange, label }: TagSelectorProps)
     const loadTags = async () => {
         try {
             const data = await tagsApi.getTags();
-            setTags(data);
+            setTags(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Failed to load tags:', error);
+            setTags([]);
         }
     };
 
@@ -66,7 +67,7 @@ export function TagSelector({ selectedTags, onChange, label }: TagSelectorProps)
             )}
 
             {/* Selected Tags */}
-            {selectedTags.length > 0 && (
+            {selectedTags.length > 0 && Array.isArray(tags) && (
                 <div className="flex flex-wrap gap-2">
                     {tags
                         .filter(tag => selectedTags.includes(tag.id))
@@ -89,7 +90,7 @@ export function TagSelector({ selectedTags, onChange, label }: TagSelectorProps)
 
             {/* Available Tags */}
             <div className="flex flex-wrap gap-2">
-                {tags
+                {Array.isArray(tags) && tags
                     .filter(tag => !selectedTags.includes(tag.id))
                     .map(tag => (
                         <button
