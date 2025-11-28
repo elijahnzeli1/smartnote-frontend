@@ -10,7 +10,8 @@ export const tagsApi = {
      */
     async getTags(): Promise<Tag[]> {
         const response = await apiClient.get('/tags/');
-        return response.data;
+        // Backend returns paginated response with results array
+        return response.data.results || response.data || [];
     },
 
     /**

@@ -3,7 +3,7 @@
  */
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NoteCard } from './NoteCard';
 import { Input } from '../ui/Input';
 import { Note } from '@/types';
@@ -27,10 +27,17 @@ export function NotesList({
 }: NotesListProps) {
     const [searchQuery, setSearchQuery] = useState('');
 
+    // Debounce search to avoid too many API calls
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            onSearch(searchQuery);
+        }, 300); // Wait 300ms after user stops typing
+
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery, onSearch]);
+
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const query = e.target.value;
-        setSearchQuery(query);
-        onSearch(query);
+        setSearchQuery(e.target.value);
     };
 
     if (loading && notes.length === 0) {
