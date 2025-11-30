@@ -31,7 +31,7 @@ export default function NotesPage() {
         if (user) {
             fetchNotes();
         }
-    }, [user]);
+    }, [user, fetchNotes]);
 
     const handleCreateNote = () => {
         setEditingNote(undefined);
